@@ -63,7 +63,12 @@ class ProjectController extends Controller
 
     public function show(Project $project): View
     {
-        $project->load(['client', 'assignedUser', 'maintenanceReports' => fn ($query) => $query->latest()]);
+        $project->load([
+            'client',
+            'assignedUser',
+            'maintenanceReports' => fn ($query) => $query->latest(),
+            'files' => fn ($query) => $query->with('uploader')->latest(),
+        ]);
 
         return view('projects.show', ['project' => $project]);
     }

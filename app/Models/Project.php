@@ -54,4 +54,9 @@ class Project extends Model
     {
         return $this->hasMany(MaintenanceReport::class);
     }
+
+    public function files(): HasMany
+    {
+        return $this->hasMany(ProjectFile::class);
+    }
 }
