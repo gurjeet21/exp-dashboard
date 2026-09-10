@@ -21,8 +21,11 @@ class ProjectFile extends Model
     protected $fillable = [
         'project_id',
         'uploaded_by',
+        'entry_type',
         'category',
         'visibility',
+        'title',
+        'content',
         'original_name',
         'stored_path',
         'disk',

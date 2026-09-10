@@ -66,6 +66,12 @@
 
     <div class="bg-slate-100 py-8">
         <div class="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
+            @if (session('status'))
+                <div class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
+                    {{ session('status') }}
+                </div>
+            @endif
+
             <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                 <section class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm shadow-slate-200/60">
                     <p class="text-sm font-medium text-slate-500">Status</p>
@@ -126,10 +132,12 @@
                         <h2 class="text-lg font-bold text-slate-950">Upload File</h2>
                         <form method="POST" action="{{ route('projects.files.store', $project) }}" enctype="multipart/form-data" class="mt-5 space-y-4">
                             @csrf
+                            <input type="hidden" name="entry_type" value="file">
 
                             <div>
                                 <x-input-label for="file" value="File" />
                                 <input id="file" name="file" type="file" class="mt-1 block w-full rounded-md border border-gray-300 bg-white text-sm text-slate-700 file:mr-4 file:border-0 file:bg-neutral-800 file:px-4 file:py-2 file:text-sm file:font-bold file:text-white" required>
+                                <p class="mt-2 text-xs text-slate-500">Current local upload limit: 2 MB. Larger files need a PHP/server upload limit change.</p>
                                 <x-input-error :messages="$errors->get('file')" class="mt-2" />
                             </div>
 
@@ -156,6 +164,45 @@
                             </div>
 
                             <x-primary-button>Upload</x-primary-button>
+                        </form>
+                    </section>
+
+                    <section class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
+                        <h2 class="text-lg font-bold text-slate-950">Write Detail</h2>
+                        <form method="POST" action="{{ route('projects.files.store', $project) }}" class="mt-5 space-y-4">
+                            @csrf
+                            <input type="hidden" name="entry_type" value="note">
+
+                            <div>
+                                <x-input-label for="note_title" value="Title" />
+                                <x-text-input id="note_title" name="title" class="mt-1 block w-full" value="{{ old('entry_type') === 'note' ? old('title') : '' }}" placeholder="Hosting note, client instruction..." />
+                                <x-input-error :messages="$errors->get('title')" class="mt-2" />
+                            </div>
+
+                            <div>
+                                <x-input-label for="note_category" value="Category" />
+                                <select id="note_category" name="category" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    @foreach ($categoryLabels as $value => $label)
+                                        <option value="{{ $value }}" @selected(old('entry_type') === 'note' && old('category') === $value)>{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div>
+                                <x-input-label for="note_visibility" value="Visibility" />
+                                <select id="note_visibility" name="visibility" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="internal" @selected(old('entry_type') === 'note' && old('visibility') === 'internal')>Internal only</option>
+                                    <option value="client" @selected(old('entry_type') === 'note' && old('visibility') === 'client')>Client visible</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <x-input-label for="note_content" value="Details" />
+                                <textarea id="note_content" name="content" rows="5" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" placeholder="Write details here...">{{ old('entry_type') === 'note' ? old('content') : '' }}</textarea>
+                                <x-input-error :messages="$errors->get('content')" class="mt-2" />
+                            </div>
+
+                            <x-primary-button>Save Detail</x-primary-button>
                         </form>
                     </section>
 
@@ -190,7 +237,12 @@
                         <div class="grid gap-4 py-4 lg:grid-cols-[1fr_auto] lg:items-center">
                             <div>
                                 <div class="flex flex-wrap items-center gap-2">
-                                    <p class="font-bold text-slate-950">{{ $file->original_name }}</p>
+                                    <p class="font-bold text-slate-950">{{ $file->title ?: $file->original_name }}</p>
+                                    <span @class([
+                                        'rounded-md px-2 py-1 text-xs font-bold',
+                                        'bg-slate-100 text-slate-600' => $file->entry_type === 'file',
+                                        'bg-sky-50 text-sky-700' => $file->entry_type === 'note',
+                                    ])>{{ $file->entry_type === 'note' ? 'Written detail' : 'File' }}</span>
                                     <span class="rounded-md bg-slate-100 px-2 py-1 text-xs font-bold text-slate-600">{{ $categoryLabels[$file->category] ?? ucfirst($file->category) }}</span>
                                     <span @class([
                                         'rounded-md px-2 py-1 text-xs font-bold',
@@ -199,15 +251,23 @@
                                     ])>{{ $file->visibility === 'client' ? 'Client visible' : 'Internal only' }}</span>
                                 </div>
                                 <p class="mt-1 text-sm text-slate-500">
-                                    {{ $fileSize((int) $file->size) }} · Uploaded by {{ $file->uploader?->name ?: 'Unknown' }} · {{ $file->created_at->format('d.m.Y H:i') }}
+                                    @if ($file->entry_type === 'file')
+                                        {{ $fileSize((int) $file->size) }} ·
+                                    @endif
+                                    Saved by {{ $file->uploader?->name ?: 'Unknown' }} · {{ $file->created_at->format('d.m.Y H:i') }}
                                 </p>
+                                @if ($file->content)
+                                    <p class="mt-2 whitespace-pre-line rounded-md bg-slate-50 p-3 text-sm leading-6 text-slate-700">{{ $file->content }}</p>
+                                @endif
                                 @if ($file->notes)
                                     <p class="mt-2 text-sm text-slate-600">{{ $file->notes }}</p>
                                 @endif
                             </div>
 
                             <div class="flex flex-wrap gap-2">
-                                <a href="{{ route('project-files.download', $file) }}" class="rounded-md bg-neutral-800 px-3 py-2 text-sm font-bold text-white hover:bg-neutral-700">Download</a>
+                                @if ($file->entry_type === 'file')
+                                    <a href="{{ route('project-files.download', $file) }}" class="rounded-md bg-neutral-800 px-3 py-2 text-sm font-bold text-white hover:bg-neutral-700">Download</a>
+                                @endif
                                 <form method="POST" action="{{ route('project-files.destroy', $file) }}">
                                     @csrf
                                     @method('DELETE')
