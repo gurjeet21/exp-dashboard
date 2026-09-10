@@ -96,10 +96,19 @@ class ProjectController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'website_url' => ['nullable', 'url', 'max:255'],
             'type' => ['required', 'string', 'max:255'],
+            'cms' => ['nullable', 'string', 'max:255'],
+            'theme_builder' => ['nullable', 'string', 'max:255'],
+            'hosting' => ['nullable', 'string', 'max:255'],
+            'domain_registrar' => ['nullable', 'string', 'max:255'],
+            'maintenance_package' => ['nullable', 'string', 'max:255'],
+            'project_documents_url' => ['nullable', 'url', 'max:255'],
+            'project_images_url' => ['nullable', 'url', 'max:255'],
+            'access_vault_url' => ['nullable', 'url', 'max:255'],
             'status' => ['required', 'in:active,paused,completed'],
             'start_date' => ['nullable', 'date'],
             'monthly_price' => ['nullable', 'numeric', 'min:0'],
             'notes' => ['nullable', 'string'],
+            'requirements' => ['nullable', 'string'],
         ]);
     }
 }

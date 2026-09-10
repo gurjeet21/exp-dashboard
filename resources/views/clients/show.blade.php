@@ -5,100 +5,106 @@
 
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-                <p class="text-sm font-medium text-gray-500">Kundenprofil {{ $profile?->short_code }}</p>
-                <h1 class="mt-1 text-2xl font-semibold text-gray-950">{{ $client->company_name }}</h1>
+                <p class="text-sm font-semibold text-slate-500">Kunde {{ $profile?->short_code }}</p>
+                <h1 class="mt-2 text-3xl font-bold text-slate-950">{{ $client->company_name }}</h1>
             </div>
-            <a href="{{ route('clients.edit', $client) }}" wire:navigate class="rounded-md border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700">Edit Profile</a>
+            <div class="flex flex-wrap gap-3">
+                <a href="{{ route('projects.create', ['client' => $client->id]) }}" wire:navigate class="rounded-md bg-neutral-800 px-4 py-2 text-sm font-bold text-white hover:bg-neutral-700">Add Project</a>
+                <a href="{{ route('clients.edit', $client) }}" wire:navigate class="rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50">Edit Client</a>
+            </div>
         </div>
     </x-slot>
 
-    <div class="py-8">
+    <div class="bg-slate-100 py-8">
         <div class="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
             <div class="grid gap-6 lg:grid-cols-3">
-                <section class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-                    <h2 class="text-base font-semibold text-gray-950">Stammdaten</h2>
-                    <dl class="mt-4 space-y-3 text-sm">
-                        <div><dt class="text-gray-500">Branche</dt><dd class="font-medium text-gray-900">{{ $profile?->industry ?: '-' }}</dd></div>
-                        <div><dt class="text-gray-500">Rechtsform</dt><dd class="font-medium text-gray-900">{{ $profile?->legal_form ?: '-' }}</dd></div>
-                        <div><dt class="text-gray-500">Kunde seit</dt><dd class="font-medium text-gray-900">{{ $profile?->customer_since ?: '-' }}</dd></div>
-                        <div><dt class="text-gray-500">Kundenwert</dt><dd class="font-medium text-gray-900">{{ $profile?->customer_value ?: '-' }}</dd></div>
+                <section class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
+                    <h2 class="text-lg font-bold text-slate-950">Stammdaten</h2>
+                    <dl class="mt-5 space-y-4 text-sm">
+                        <div><dt class="text-slate-500">Branche</dt><dd class="font-semibold text-slate-900">{{ $profile?->industry ?: '-' }}</dd></div>
+                        <div><dt class="text-slate-500">Rechtsform</dt><dd class="font-semibold text-slate-900">{{ $profile?->legal_form ?: '-' }}</dd></div>
+                        <div><dt class="text-slate-500">Kunde seit</dt><dd class="font-semibold text-slate-900">{{ $profile?->customer_since ?: '-' }}</dd></div>
+                        <div><dt class="text-slate-500">Status</dt><dd class="font-semibold text-slate-900">{{ ucfirst($client->status) }}</dd></div>
                     </dl>
                 </section>
 
-                <section class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-                    <h2 class="text-base font-semibold text-gray-950">Kommunikation</h2>
-                    <dl class="mt-4 space-y-3 text-sm">
-                        <div><dt class="text-gray-500">Hauptkontakt</dt><dd class="font-medium text-gray-900">{{ $client->contact_name ?: '-' }}</dd></div>
-                        <div><dt class="text-gray-500">E-Mail</dt><dd class="font-medium text-gray-900">{{ $client->email ?: '-' }}</dd></div>
-                        <div><dt class="text-gray-500">Telefon</dt><dd class="font-medium text-gray-900">{{ $client->phone ?: '-' }}</dd></div>
-                        <div><dt class="text-gray-500">Kanal</dt><dd class="font-medium text-gray-900">{{ $profile?->preferred_channel ?: '-' }}</dd></div>
+                <section class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
+                    <h2 class="text-lg font-bold text-slate-950">Kontakt</h2>
+                    <dl class="mt-5 space-y-4 text-sm">
+                        <div><dt class="text-slate-500">Hauptkontakt</dt><dd class="font-semibold text-slate-900">{{ $client->contact_name ?: '-' }}</dd></div>
+                        <div><dt class="text-slate-500">E-Mail</dt><dd class="font-semibold text-slate-900">{{ $client->email ?: '-' }}</dd></div>
+                        <div><dt class="text-slate-500">Telefon</dt><dd class="font-semibold text-slate-900">{{ $client->phone ?: '-' }}</dd></div>
+                        <div><dt class="text-slate-500">Kontaktweg</dt><dd class="font-semibold text-slate-900">{{ $profile?->preferred_channel ?: '-' }}</dd></div>
                     </dl>
                 </section>
 
-                <section class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-                    <h2 class="text-base font-semibold text-gray-950">Technik</h2>
-                    <dl class="mt-4 space-y-3 text-sm">
-                        <div><dt class="text-gray-500">CMS</dt><dd class="font-medium text-gray-900">{{ $profile?->cms ?: '-' }}</dd></div>
-                        <div><dt class="text-gray-500">Theme / Builder</dt><dd class="font-medium text-gray-900">{{ $profile?->theme_builder ?: '-' }}</dd></div>
-                        <div><dt class="text-gray-500">Hosting</dt><dd class="font-medium text-gray-900">{{ $profile?->hosting ?: '-' }}</dd></div>
-                        <div><dt class="text-gray-500">SSL</dt><dd class="font-medium text-gray-900">{{ $profile?->ssl_certificate ?: '-' }}</dd></div>
-                    </dl>
-                </section>
-            </div>
-
-            <div class="grid gap-6 lg:grid-cols-2">
-                <section class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-                    <h2 class="text-base font-semibold text-gray-950">Leistungen</h2>
-                    <div class="mt-4 grid gap-4 sm:grid-cols-2">
+                <section class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
+                    <h2 class="text-lg font-bold text-slate-950">Weitere Kontakte</h2>
+                    <div class="mt-5 space-y-4 text-sm">
                         <div>
-                            <p class="text-sm font-semibold text-gray-700">Aktiv</p>
-                            <div class="mt-2 flex flex-wrap gap-2">@forelse ($list($profile?->services_active) as $item)<span class="rounded-md bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-700">{{ $item }}</span>@empty<span class="text-sm text-gray-500">-</span>@endforelse</div>
+                            <p class="text-slate-500">Weitere E-Mails</p>
+                            <div class="mt-2 space-y-1">
+                                @forelse ($list($profile?->emails) as $email)
+                                    <p class="font-semibold text-slate-900">{{ $email }}</p>
+                                @empty
+                                    <p class="text-slate-500">-</p>
+                                @endforelse
+                            </div>
                         </div>
                         <div>
-                            <p class="text-sm font-semibold text-gray-700">Potenzial</p>
-                            <div class="mt-2 flex flex-wrap gap-2">@forelse ($list($profile?->services_potential) as $item)<span class="rounded-md bg-sky-50 px-2 py-1 text-xs font-semibold text-sky-700">{{ $item }}</span>@empty<span class="text-sm text-gray-500">-</span>@endforelse</div>
+                            <p class="text-slate-500">Weitere Telefonnummern</p>
+                            <div class="mt-2 space-y-1">
+                                @forelse ($list($profile?->phones) as $phone)
+                                    <p class="font-semibold text-slate-900">{{ $phone }}</p>
+                                @empty
+                                    <p class="text-slate-500">-</p>
+                                @endforelse
+                            </div>
                         </div>
                     </div>
                 </section>
-
-                <section class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-                    <h2 class="text-base font-semibold text-gray-950">SEO Quick-Check</h2>
-                    <div class="mt-4 flex flex-wrap gap-2">@forelse ($list($profile?->seo_checks) as $item)<span class="rounded-md bg-gray-100 px-2 py-1 text-xs font-semibold text-gray-700">{{ $item }}</span>@empty<span class="text-sm text-gray-500">No SEO checks saved yet.</span>@endforelse</div>
-                    <p class="mt-4 text-sm text-gray-600">{{ $profile?->seo_notes }}</p>
-                </section>
             </div>
 
-            <div class="grid gap-6 lg:grid-cols-3">
-                <section class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm lg:col-span-2">
+            <div class="grid gap-6 lg:grid-cols-[1fr_360px]">
+                <section class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
                     <div class="flex items-center justify-between">
-                        <h2 class="text-base font-semibold text-gray-950">Projects</h2>
-                        <a href="{{ route('projects.create', ['client' => $client->id]) }}" wire:navigate class="text-sm font-semibold text-gray-900">Add Project</a>
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-950">Projects</h2>
+                            <p class="mt-1 text-sm text-slate-500">All project-level work, reports, documents and tickets live inside these projects.</p>
+                        </div>
+                        <a href="{{ route('projects.create', ['client' => $client->id]) }}" wire:navigate class="text-sm font-bold text-neutral-700">Add Project</a>
                     </div>
-                    <div class="mt-4 divide-y divide-gray-100">
+
+                    <div class="mt-5 divide-y divide-slate-100">
                         @forelse ($client->projects as $project)
-                            <a href="{{ route('projects.show', $project) }}" wire:navigate class="block py-3">
-                                <p class="font-semibold text-gray-950">{{ $project->name }}</p>
-                                <p class="text-sm text-gray-500">{{ $project->website_url ?: 'No website URL' }}</p>
+                            <a href="{{ route('projects.show', $project) }}" wire:navigate class="block py-4">
+                                <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                                    <div>
+                                        <p class="font-bold text-slate-950">{{ $project->name }}</p>
+                                        <p class="mt-1 text-sm text-slate-500">{{ $project->website_url ?: 'No website URL' }}</p>
+                                    </div>
+                                    <span class="w-fit rounded-md bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-600">{{ ucfirst($project->status) }}</span>
+                                </div>
                             </a>
                         @empty
-                            <p class="py-8 text-sm text-gray-500">No projects yet.</p>
+                            <p class="py-8 text-sm text-slate-500">No projects yet. Add the first project for this client.</p>
                         @endforelse
                     </div>
                 </section>
 
-                <section class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-                    <h2 class="text-base font-semibold text-gray-950">Interne Notizen</h2>
-                    <dl class="mt-4 space-y-3 text-sm">
-                        <div><dt class="text-gray-500">Zuständig</dt><dd class="font-medium text-gray-900">{{ $profile?->internal_owner ?: '-' }}</dd></div>
-                        <div><dt class="text-gray-500">Zufriedenheit</dt><dd class="font-medium text-gray-900">{{ $profile?->satisfaction ?: '-' }}</dd></div>
-                        <div><dt class="text-gray-500">Zahlungsverhalten</dt><dd class="font-medium text-gray-900">{{ $profile?->payment_behavior ?: '-' }}</dd></div>
-                    </dl>
-                    @if ($profile?->personal_notes)
-                        <p class="mt-4 rounded-md bg-gray-50 p-3 text-sm text-gray-700">{{ $profile->personal_notes }}</p>
-                    @endif
-                </section>
+                <aside class="space-y-6">
+                    <section class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
+                        <h2 class="text-lg font-bold text-slate-950">Adresse</h2>
+                        <p class="mt-4 whitespace-pre-line text-sm leading-6 text-slate-600">{{ $client->address ?: '-' }}</p>
+                    </section>
+
+                    <section class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
+                        <h2 class="text-lg font-bold text-slate-950">Interne Notizen</h2>
+                        <p class="mt-4 whitespace-pre-line text-sm leading-6 text-slate-600">{{ $profile?->personal_notes ?: 'No internal notes saved yet.' }}</p>
+                    </section>
+                </aside>
             </div>
         </div>
     </div>

@@ -17,10 +17,19 @@ class Project extends Model
         'name',
         'website_url',
         'type',
+        'cms',
+        'theme_builder',
+        'hosting',
+        'domain_registrar',
+        'maintenance_package',
+        'project_documents_url',
+        'project_images_url',
+        'access_vault_url',
         'status',
         'start_date',
         'monthly_price',
         'notes',
+        'requirements',
     ];
 
     protected function casts(): array
