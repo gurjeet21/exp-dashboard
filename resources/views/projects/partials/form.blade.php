@@ -112,33 +112,6 @@
     </section>
 
     <section class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
-        <div class="border-b border-slate-100 pb-5">
-            <h2 class="text-lg font-bold text-slate-950">Projekt-Ordner</h2>
-            <p class="mt-1 text-sm text-slate-500">Für den Start speichern wir Links zu bestehenden Drive/Workspace Ordnern. Später kann daraus ein eigenes Upload-Modul werden.</p>
-        </div>
-
-        <div class="mt-6 grid gap-5">
-            <div>
-                <x-input-label for="project_documents_url" value="Project Documents" />
-                <x-text-input id="project_documents_url" name="project_documents_url" class="mt-1 block w-full" value="{{ old('project_documents_url', $project->project_documents_url) }}" placeholder="https://drive.google.com/..." />
-                <x-input-error :messages="$errors->get('project_documents_url')" class="mt-2" />
-            </div>
-
-            <div>
-                <x-input-label for="project_images_url" value="Project Related Images" />
-                <x-text-input id="project_images_url" name="project_images_url" class="mt-1 block w-full" value="{{ old('project_images_url', $project->project_images_url) }}" placeholder="https://drive.google.com/..." />
-                <x-input-error :messages="$errors->get('project_images_url')" class="mt-2" />
-            </div>
-
-            <div>
-                <x-input-label for="access_vault_url" value="Tresor / Zugangsdaten" />
-                <x-text-input id="access_vault_url" name="access_vault_url" class="mt-1 block w-full" value="{{ old('access_vault_url', $project->access_vault_url) }}" placeholder="Interner Link zum Passwortmanager oder Tresor" />
-                <x-input-error :messages="$errors->get('access_vault_url')" class="mt-2" />
-            </div>
-        </div>
-    </section>
-
-    <section class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
         <x-input-label for="notes" value="Interne Projektnotizen" />
         <textarea id="notes" name="notes" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">{{ old('notes', $project->notes) }}</textarea>
     </section>
