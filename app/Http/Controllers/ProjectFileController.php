@@ -7,6 +7,7 @@ use App\Models\ProjectFile;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -17,7 +18,6 @@ class ProjectFileController extends Controller
     {
         $data = $request->validate([
             'entry_type' => ['required', 'in:file,note'],
-            'file' => ['required_if:entry_type,file', 'file', 'max:2048'],
             'category' => ['required', 'in:'.implode(',', array_keys(ProjectFile::CATEGORIES))],
             'visibility' => ['required', 'in:internal,client'],
             'title' => ['required_if:entry_type,note', 'nullable', 'string', 'max:255'],
@@ -42,14 +42,28 @@ class ProjectFileController extends Controller
         }
 
         $uploadedFile = $request->file('file');
-        $path = null;
 
-        if ($uploadedFile) {
-            $extension = $uploadedFile->getClientOriginalExtension();
-            $filename = Str::uuid().($extension ? '.'.$extension : '');
-            $directory = 'projects/'.$project->id.'/'.$data['category'];
-            $path = $uploadedFile->storeAs($directory, $filename, 'local');
+        if (! $uploadedFile) {
+            return back()
+                ->withErrors(['file' => 'No file was received by the server. Please choose the file again and upload.'])
+                ->withInput($request->except('file'));
         }
+
+        if (! $uploadedFile->isValid()) {
+            return back()
+                ->withErrors(['file' => 'Upload failed before Laravel could store it. PHP error '.$uploadedFile->getError().': '.$uploadedFile->getErrorMessage()])
+                ->withInput($request->except('file'));
+        }
+
+        Validator::make(
+            ['file' => $uploadedFile],
+            ['file' => ['file', 'max:2048']]
+        )->validate();
+
+        $extension = $uploadedFile->getClientOriginalExtension();
+        $filename = Str::uuid().($extension ? '.'.$extension : '');
+        $directory = 'projects/'.$project->id.'/'.$data['category'];
+        $path = $uploadedFile->storeAs($directory, $filename, 'local');
 
         $project->files()->create([
             'uploaded_by' => $request->user()->id,
