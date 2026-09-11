@@ -143,7 +143,7 @@
                             <div>
                                 <x-input-label for="file" value="File" />
                                 <input id="file" name="file" type="file" class="mt-1 block w-full rounded-md border border-gray-300 bg-white text-sm text-slate-700 file:mr-4 file:border-0 file:bg-neutral-800 file:px-4 file:py-2 file:text-sm file:font-bold file:text-white" required>
-                                <p class="mt-2 text-xs text-slate-500">Max file size right now: 2 MB. If the file is larger, please use Write Detail for now or we can increase the PHP/server limit.</p>
+                                <p class="mt-2 text-xs text-slate-500">Max file size right now: 20 MB. For larger files we can connect external object storage later.</p>
                                 <x-input-error :messages="$errors->get('file')" class="mt-2" />
                             </div>
 

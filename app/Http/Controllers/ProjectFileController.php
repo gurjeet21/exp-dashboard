@@ -57,7 +57,7 @@ class ProjectFileController extends Controller
 
         Validator::make(
             ['file' => $uploadedFile],
-            ['file' => ['file', 'max:2048']]
+            ['file' => ['file', 'max:20480']]
         )->validate();
 
         $extension = $uploadedFile->getClientOriginalExtension();
