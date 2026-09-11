@@ -77,4 +77,44 @@ class ProjectFileTest extends TestCase
             'stored_path' => null,
         ]);
     }
+
+    public function test_user_can_update_a_written_project_detail(): void
+    {
+        $user = User::factory()->create();
+        $project = Project::create([
+            'client_id' => Client::create(['company_name' => 'Test Client', 'status' => 'active'])->id,
+            'name' => 'Website Care',
+            'type' => 'maintenance',
+            'status' => 'active',
+        ]);
+        $projectFile = $project->files()->create([
+            'uploaded_by' => $user->id,
+            'entry_type' => 'note',
+            'category' => 'documents',
+            'visibility' => 'internal',
+            'title' => 'Old title',
+            'content' => 'Old content',
+            'disk' => 'local',
+            'size' => 0,
+        ]);
+
+        $response = $this->actingAs($user)->put(route('project-files.update', $projectFile), [
+            'title' => 'Updated hosting details',
+            'content' => 'Updated access instructions.',
+            'category' => 'access',
+            'visibility' => 'client',
+            'notes' => 'Reviewed by admin.',
+        ]);
+
+        $response->assertRedirect(route('projects.show', $project));
+
+        $this->assertDatabaseHas('project_files', [
+            'id' => $projectFile->id,
+            'title' => 'Updated hosting details',
+            'content' => 'Updated access instructions.',
+            'category' => 'access',
+            'visibility' => 'client',
+            'notes' => 'Reviewed by admin.',
+        ]);
+    }
 }

@@ -14,36 +14,42 @@
             'title' => 'Project Documents',
             'description' => 'Website content, legal PDFs, contracts, approvals and briefing files.',
             'category' => 'documents',
+            'anchor' => 'project-files-documents',
             'status' => ($filesByCategory->get('documents')?->count() ?? 0).' files',
         ],
         [
             'title' => 'Project Related Images',
             'description' => 'Logos, banners, screenshots, image material and design assets.',
             'category' => 'images',
+            'anchor' => 'project-files-images',
             'status' => ($filesByCategory->get('images')?->count() ?? 0).' files',
         ],
         [
             'title' => 'Maintenance Reports',
             'description' => 'Monthly reports for this project with tasks, hours, PDF and email workflow.',
             'category' => 'maintenance_reports',
+            'anchor' => 'project-files-maintenance_reports',
             'status' => $project->maintenanceReports->count().' reports',
         ],
         [
             'title' => 'Tasks / Control Center',
             'description' => 'Internal tasks, client-visible tasks, developer, dates, status and hours.',
             'category' => null,
+            'anchor' => null,
             'status' => 'Planned',
         ],
         [
             'title' => 'Tresor / Zugangsdaten',
             'description' => 'Hosting, CMS, FTP, email, API keys and protected project access data.',
             'category' => 'access',
+            'anchor' => 'project-files-access',
             'status' => ($filesByCategory->get('access')?->count() ?? 0).' files',
         ],
         [
             'title' => 'Tickets',
             'description' => 'Client issues and requests that can later be assigned to your team.',
             'category' => null,
+            'anchor' => null,
             'status' => 'Planned',
         ],
     ];
@@ -117,7 +123,7 @@
 
                                 <div class="mt-5">
                                     @if ($section['category'])
-                                        <span class="inline-flex rounded-md bg-neutral-800 px-3 py-2 text-sm font-bold text-white">Ready</span>
+                                        <a href="#{{ $section['anchor'] }}" class="inline-flex rounded-md bg-neutral-800 px-3 py-2 text-sm font-bold text-white hover:bg-neutral-700">View items</a>
                                     @else
                                         <span class="inline-flex rounded-md border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-500">Coming later</span>
                                     @endif
@@ -128,7 +134,7 @@
                 </section>
 
                 <aside class="space-y-6">
-                    <section class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
+                    <section id="file-upload-panel" class="scroll-mt-6 rounded-lg border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
                         <h2 class="text-lg font-bold text-slate-950">Upload File</h2>
                         <form method="POST" action="{{ route('projects.files.store', $project) }}" enctype="multipart/form-data" class="mt-5 space-y-4">
                             @csrf
@@ -137,7 +143,7 @@
                             <div>
                                 <x-input-label for="file" value="File" />
                                 <input id="file" name="file" type="file" class="mt-1 block w-full rounded-md border border-gray-300 bg-white text-sm text-slate-700 file:mr-4 file:border-0 file:bg-neutral-800 file:px-4 file:py-2 file:text-sm file:font-bold file:text-white" required>
-                                <p class="mt-2 text-xs text-slate-500">Current local upload limit: 2 MB. Larger files need a PHP/server upload limit change.</p>
+                                <p class="mt-2 text-xs text-slate-500">Max file size right now: 2 MB. If the file is larger, please use Write Detail for now or we can increase the PHP/server limit.</p>
                                 <x-input-error :messages="$errors->get('file')" class="mt-2" />
                             </div>
 
@@ -232,52 +238,67 @@
                     <span class="w-fit rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">{{ $project->files->count() }} total</span>
                 </div>
 
-                <div class="mt-5 divide-y divide-slate-100">
-                    @forelse ($project->files as $file)
-                        <div class="grid gap-4 py-4 lg:grid-cols-[1fr_auto] lg:items-center">
-                            <div>
-                                <div class="flex flex-wrap items-center gap-2">
-                                    <p class="font-bold text-slate-950">{{ $file->title ?: $file->original_name }}</p>
-                                    <span @class([
-                                        'rounded-md px-2 py-1 text-xs font-bold',
-                                        'bg-slate-100 text-slate-600' => $file->entry_type === 'file',
-                                        'bg-sky-50 text-sky-700' => $file->entry_type === 'note',
-                                    ])>{{ $file->entry_type === 'note' ? 'Written detail' : 'File' }}</span>
-                                    <span class="rounded-md bg-slate-100 px-2 py-1 text-xs font-bold text-slate-600">{{ $categoryLabels[$file->category] ?? ucfirst($file->category) }}</span>
-                                    <span @class([
-                                        'rounded-md px-2 py-1 text-xs font-bold',
-                                        'bg-emerald-50 text-emerald-700' => $file->visibility === 'client',
-                                        'bg-rose-50 text-rose-700' => $file->visibility !== 'client',
-                                    ])>{{ $file->visibility === 'client' ? 'Client visible' : 'Internal only' }}</span>
+                <div class="mt-6 space-y-8">
+                    @foreach ($categoryLabels as $category => $label)
+                        @php $categoryFiles = $filesByCategory->get($category, collect()); @endphp
+                        <div id="project-files-{{ $category }}" class="scroll-mt-6 rounded-lg border border-slate-200">
+                            <div class="flex flex-col gap-2 border-b border-slate-100 bg-slate-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+                                <div>
+                                    <h3 class="font-bold text-slate-950">{{ $label }}</h3>
+                                    <p class="text-sm text-slate-500">{{ $categoryFiles->count() }} saved item{{ $categoryFiles->count() === 1 ? '' : 's' }}</p>
                                 </div>
-                                <p class="mt-1 text-sm text-slate-500">
-                                    @if ($file->entry_type === 'file')
-                                        {{ $fileSize((int) $file->size) }} ·
-                                    @endif
-                                    Saved by {{ $file->uploader?->name ?: 'Unknown' }} · {{ $file->created_at->format('d.m.Y H:i') }}
-                                </p>
-                                @if ($file->content)
-                                    <p class="mt-2 whitespace-pre-line rounded-md bg-slate-50 p-3 text-sm leading-6 text-slate-700">{{ $file->content }}</p>
-                                @endif
-                                @if ($file->notes)
-                                    <p class="mt-2 text-sm text-slate-600">{{ $file->notes }}</p>
-                                @endif
+                                <a href="#file-upload-panel" class="text-sm font-bold text-neutral-700">Add item</a>
                             </div>
 
-                            <div class="flex flex-wrap gap-2">
-                                @if ($file->entry_type === 'file')
-                                    <a href="{{ route('project-files.download', $file) }}" class="rounded-md bg-neutral-800 px-3 py-2 text-sm font-bold text-white hover:bg-neutral-700">Download</a>
-                                @endif
-                                <form method="POST" action="{{ route('project-files.destroy', $file) }}">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="rounded-md border border-rose-200 bg-white px-3 py-2 text-sm font-bold text-rose-700 hover:bg-rose-50">Delete</button>
-                                </form>
+                            <div class="divide-y divide-slate-100 px-4">
+                                @forelse ($categoryFiles as $file)
+                                    <div class="grid gap-4 py-4 lg:grid-cols-[1fr_auto] lg:items-center">
+                                        <div>
+                                            <div class="flex flex-wrap items-center gap-2">
+                                                <p class="font-bold text-slate-950">{{ $file->title ?: $file->original_name }}</p>
+                                                <span @class([
+                                                    'rounded-md px-2 py-1 text-xs font-bold',
+                                                    'bg-slate-100 text-slate-600' => $file->entry_type === 'file',
+                                                    'bg-sky-50 text-sky-700' => $file->entry_type === 'note',
+                                                ])>{{ $file->entry_type === 'note' ? 'Written detail' : 'File' }}</span>
+                                                <span @class([
+                                                    'rounded-md px-2 py-1 text-xs font-bold',
+                                                    'bg-emerald-50 text-emerald-700' => $file->visibility === 'client',
+                                                    'bg-rose-50 text-rose-700' => $file->visibility !== 'client',
+                                                ])>{{ $file->visibility === 'client' ? 'Client visible' : 'Internal only' }}</span>
+                                            </div>
+                                            <p class="mt-1 text-sm text-slate-500">
+                                                @if ($file->entry_type === 'file')
+                                                    {{ $fileSize((int) $file->size) }} ·
+                                                @endif
+                                                Saved by {{ $file->uploader?->name ?: 'Unknown' }} · {{ $file->created_at->format('d.m.Y H:i') }}
+                                            </p>
+                                            @if ($file->content)
+                                                <p class="mt-2 whitespace-pre-line rounded-md bg-slate-50 p-3 text-sm leading-6 text-slate-700">{{ $file->content }}</p>
+                                            @endif
+                                            @if ($file->notes)
+                                                <p class="mt-2 text-sm text-slate-600">{{ $file->notes }}</p>
+                                            @endif
+                                        </div>
+
+                                        <div class="flex flex-wrap gap-2">
+                                            <a href="{{ route('project-files.edit', $file) }}" wire:navigate class="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50">Edit</a>
+                                            @if ($file->entry_type === 'file')
+                                                <a href="{{ route('project-files.download', $file) }}" class="rounded-md bg-neutral-800 px-3 py-2 text-sm font-bold text-white hover:bg-neutral-700">Download</a>
+                                            @endif
+                                            <form method="POST" action="{{ route('project-files.destroy', $file) }}">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="rounded-md border border-rose-200 bg-white px-3 py-2 text-sm font-bold text-rose-700 hover:bg-rose-50">Delete</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                @empty
+                                    <p class="py-5 text-sm text-slate-500">No items saved in this section yet.</p>
+                                @endforelse
                             </div>
                         </div>
-                    @empty
-                        <p class="py-8 text-sm text-slate-500">No files uploaded yet.</p>
-                    @endforelse
+                    @endforeach
                 </div>
             </section>
 
