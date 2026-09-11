@@ -18,13 +18,19 @@ new class extends Component
 
 @php
     $navItems = [
-        ['label' => 'Dashboard', 'route' => 'dashboard', 'active' => request()->routeIs('dashboard'), 'count' => '24'],
-        ['label' => 'Kunden', 'route' => 'clients.index', 'active' => request()->routeIs('clients.*')],
-        ['label' => 'Projekte', 'route' => 'projects.index', 'active' => request()->routeIs('projects.*')],
-        ['label' => 'Wartungsberichte', 'route' => 'reports.index', 'active' => request()->routeIs('reports.*')],
+        ['label' => __('app.nav.dashboard'), 'route' => 'dashboard', 'active' => request()->routeIs('dashboard'), 'count' => '24'],
+        ['label' => __('app.nav.clients'), 'route' => 'clients.index', 'active' => request()->routeIs('clients.*')],
+        ['label' => __('app.nav.projects'), 'route' => 'projects.index', 'active' => request()->routeIs('projects.*')],
+        ['label' => __('app.nav.reports'), 'route' => 'reports.index', 'active' => request()->routeIs('reports.*')],
     ];
 
-    $plannedItems = ['Aufgaben', 'Dateien', 'Tickets', 'Rechnungen', 'Einstellungen'];
+    $plannedItems = [
+        __('app.nav.tasks'),
+        __('app.nav.files'),
+        __('app.nav.tickets'),
+        __('app.nav.invoices'),
+        __('app.nav.settings'),
+    ];
 @endphp
 
 <nav x-data="{ open: false }" class="border-b border-slate-200 bg-white lg:border-b-0 lg:bg-neutral-900">
@@ -48,7 +54,7 @@ new class extends Component
             </div>
             <div>
                 <div class="text-lg font-bold">eXP Designs</div>
-                <div class="text-sm text-neutral-300">Client Portal</div>
+                <div class="text-sm text-neutral-300">{{ __('app.brand_subtitle') }}</div>
             </div>
         </a>
 
@@ -72,8 +78,8 @@ new class extends Component
         </div>
 
         <div class="mt-auto rounded-lg border border-neutral-700 bg-neutral-800 p-4 text-sm text-neutral-300">
-            <p class="font-semibold text-white">Client visibility</p>
-            <p class="mt-1">Aufgaben, Dateien und Berichte können später pro Kunde sichtbar oder intern bleiben.</p>
+            <p class="font-semibold text-white">{{ __('app.client_visibility.title') }}</p>
+            <p class="mt-1">{{ __('app.client_visibility.description') }}</p>
         </div>
     </aside>
 
@@ -94,13 +100,13 @@ new class extends Component
 
             <div class="mt-3 space-y-1">
                 <x-responsive-nav-link :href="route('profile')" wire:navigate>
-                    {{ __('Profile') }}
+                    {{ __('app.profile') }}
                 </x-responsive-nav-link>
 
                 <!-- Authentication -->
                 <button wire:click="logout" class="w-full text-start">
                     <x-responsive-nav-link>
-                        {{ __('Log Out') }}
+                        {{ __('app.logout') }}
                     </x-responsive-nav-link>
                 </button>
             </div>

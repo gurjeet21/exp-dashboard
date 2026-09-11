@@ -1,5 +1,7 @@
 @php
-    $categoryLabels = \App\Models\ProjectFile::CATEGORIES;
+    $categoryLabels = collect(array_keys(\App\Models\ProjectFile::CATEGORIES))
+        ->mapWithKeys(fn (string $key): array => [$key => __('project_files.categories.'.$key)])
+        ->all();
     $filesByCategory = $project->files->groupBy('category');
     $fileSize = function (int $bytes): string {
         if ($bytes >= 1048576) {
@@ -11,46 +13,46 @@
 
     $folderSections = [
         [
-            'title' => 'Project Documents',
-            'description' => 'Website content, legal PDFs, contracts, approvals and briefing files.',
+            'title' => __('project_files.categories.documents'),
+            'description' => __('project_files.category_descriptions.documents'),
             'category' => 'documents',
             'anchor' => 'project-files-documents',
-            'status' => ($filesByCategory->get('documents')?->count() ?? 0).' files',
+            'status' => trans_choice('project_files.files_count', $filesByCategory->get('documents')?->count() ?? 0),
         ],
         [
-            'title' => 'Project Related Images',
-            'description' => 'Logos, banners, screenshots, image material and design assets.',
+            'title' => __('project_files.categories.images'),
+            'description' => __('project_files.category_descriptions.images'),
             'category' => 'images',
             'anchor' => 'project-files-images',
-            'status' => ($filesByCategory->get('images')?->count() ?? 0).' files',
+            'status' => trans_choice('project_files.files_count', $filesByCategory->get('images')?->count() ?? 0),
         ],
         [
-            'title' => 'Maintenance Reports',
-            'description' => 'Monthly reports for this project with tasks, hours, PDF and email workflow.',
+            'title' => __('project_files.categories.maintenance_reports'),
+            'description' => __('project_files.category_descriptions.maintenance_reports'),
             'category' => 'maintenance_reports',
             'anchor' => 'project-files-maintenance_reports',
-            'status' => $project->maintenanceReports->count().' reports',
+            'status' => trans_choice('project_files.reports_count', $project->maintenanceReports->count()),
         ],
         [
-            'title' => 'Tasks / Control Center',
-            'description' => 'Internal tasks, client-visible tasks, developer, dates, status and hours.',
+            'title' => __('project_files.labels.tasks_control_center'),
+            'description' => __('project_files.category_descriptions.tasks'),
             'category' => null,
             'anchor' => null,
-            'status' => 'Planned',
+            'status' => __('project_files.labels.planned'),
         ],
         [
-            'title' => 'Tresor / Zugangsdaten',
-            'description' => 'Hosting, CMS, FTP, email, API keys and protected project access data.',
+            'title' => __('project_files.categories.access'),
+            'description' => __('project_files.category_descriptions.access'),
             'category' => 'access',
             'anchor' => 'project-files-access',
-            'status' => ($filesByCategory->get('access')?->count() ?? 0).' files',
+            'status' => trans_choice('project_files.files_count', $filesByCategory->get('access')?->count() ?? 0),
         ],
         [
-            'title' => 'Tickets',
-            'description' => 'Client issues and requests that can later be assigned to your team.',
+            'title' => __('app.nav.tickets'),
+            'description' => __('project_files.category_descriptions.tickets'),
             'category' => null,
             'anchor' => null,
-            'status' => 'Planned',
+            'status' => __('project_files.labels.planned'),
         ],
     ];
 @endphp
@@ -61,11 +63,11 @@
             <div>
                 <p class="text-sm font-semibold text-slate-500">{{ $project->client->company_name }}</p>
                 <h1 class="mt-2 text-3xl font-bold text-slate-950">{{ $project->name }}</h1>
-                <p class="mt-2 text-sm text-slate-500">{{ $project->website_url ?: 'No website URL saved yet.' }}</p>
+                <p class="mt-2 text-sm text-slate-500">{{ $project->website_url ?: __('project_files.labels.no_website_url') }}</p>
             </div>
             <div class="flex flex-wrap gap-3">
-                <a href="{{ route('reports.create', ['project' => $project->id]) }}" wire:navigate class="rounded-md bg-neutral-800 px-4 py-2 text-sm font-bold text-white hover:bg-neutral-700">New Report</a>
-                <a href="{{ route('projects.edit', $project) }}" wire:navigate class="rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50">Edit Project</a>
+                <a href="{{ route('reports.create', ['project' => $project->id]) }}" wire:navigate class="rounded-md bg-neutral-800 px-4 py-2 text-sm font-bold text-white hover:bg-neutral-700">{{ __('project_files.actions.new_report') }}</a>
+                <a href="{{ route('projects.edit', $project) }}" wire:navigate class="rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50">{{ __('project_files.actions.edit_project') }}</a>
             </div>
         </div>
     </x-slot>
@@ -81,12 +83,12 @@
             <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                 <section class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm shadow-slate-200/60">
                     <p class="text-sm font-medium text-slate-500">Status</p>
-                    <p class="mt-3 text-2xl font-bold text-slate-950">{{ ucfirst($project->status) }}</p>
+                    <p class="mt-3 text-2xl font-bold text-slate-950">{{ __('project_files.status.'.$project->status) }}</p>
                 </section>
 
                 <section class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm shadow-slate-200/60">
                     <p class="text-sm font-medium text-slate-500">Projektart</p>
-                    <p class="mt-3 text-2xl font-bold text-slate-950">{{ ucfirst($project->type) }}</p>
+                    <p class="mt-3 text-2xl font-bold text-slate-950">{{ __('project_files.types.'.$project->type) }}</p>
                 </section>
 
                 <section class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm shadow-slate-200/60">
@@ -104,10 +106,10 @@
                 <section class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
                     <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                         <div>
-                            <h2 class="text-xl font-bold text-slate-950">Project Workspace</h2>
-                            <p class="mt-1 text-sm text-slate-500">Upload documents, images and internal project files directly into eXP Dashboard.</p>
+                            <h2 class="text-xl font-bold text-slate-950">{{ __('project_files.labels.project_workspace') }}</h2>
+                            <p class="mt-1 text-sm text-slate-500">{{ __('project_files.labels.workspace_description') }}</p>
                         </div>
-                        <span class="w-fit rounded-full bg-neutral-100 px-3 py-1 text-xs font-bold text-neutral-700">Portal storage</span>
+                        <span class="w-fit rounded-full bg-neutral-100 px-3 py-1 text-xs font-bold text-neutral-700">{{ __('project_files.labels.portal_storage') }}</span>
                     </div>
 
                     <div class="mt-6 grid gap-4 md:grid-cols-2">
@@ -123,9 +125,9 @@
 
                                 <div class="mt-5">
                                     @if ($section['category'])
-                                        <a href="#{{ $section['anchor'] }}" class="inline-flex rounded-md bg-neutral-800 px-3 py-2 text-sm font-bold text-white hover:bg-neutral-700">View items</a>
+                                        <a href="#{{ $section['anchor'] }}" class="inline-flex rounded-md bg-neutral-800 px-3 py-2 text-sm font-bold text-white hover:bg-neutral-700">{{ __('project_files.actions.view_items') }}</a>
                                     @else
-                                        <span class="inline-flex rounded-md border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-500">Coming later</span>
+                                        <span class="inline-flex rounded-md border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-500">{{ __('project_files.actions.coming_later') }}</span>
                                     @endif
                                 </div>
                             </div>
@@ -135,20 +137,20 @@
 
                 <aside class="space-y-6">
                     <section id="file-upload-panel" class="scroll-mt-6 rounded-lg border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
-                        <h2 class="text-lg font-bold text-slate-950">Upload File</h2>
+                        <h2 class="text-lg font-bold text-slate-950">{{ __('project_files.labels.upload_file') }}</h2>
                         <form method="POST" action="{{ route('projects.files.store', $project) }}" enctype="multipart/form-data" class="mt-5 space-y-4">
                             @csrf
                             <input type="hidden" name="entry_type" value="file">
 
                             <div>
-                                <x-input-label for="file" value="File" />
+                                <x-input-label for="file" :value="__('project_files.fields.file')" />
                                 <input id="file" name="file" type="file" class="mt-1 block w-full rounded-md border border-gray-300 bg-white text-sm text-slate-700 file:mr-4 file:border-0 file:bg-neutral-800 file:px-4 file:py-2 file:text-sm file:font-bold file:text-white" required>
-                                <p class="mt-2 text-xs text-slate-500">Max file size right now: 20 MB. For larger files we can connect external object storage later.</p>
+                                <p class="mt-2 text-xs text-slate-500">{{ __('project_files.labels.upload_limit') }}</p>
                                 <x-input-error :messages="$errors->get('file')" class="mt-2" />
                             </div>
 
                             <div>
-                                <x-input-label for="category" value="Category" />
+                                <x-input-label for="category" :value="__('project_files.fields.category')" />
                                 <select id="category" name="category" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
                                     @foreach ($categoryLabels as $value => $label)
                                         <option value="{{ $value }}">{{ $label }}</option>
@@ -157,36 +159,36 @@
                             </div>
 
                             <div>
-                                <x-input-label for="visibility" value="Visibility" />
+                                <x-input-label for="visibility" :value="__('project_files.fields.visibility')" />
                                 <select id="visibility" name="visibility" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                                    <option value="internal">Internal only</option>
-                                    <option value="client">Client visible</option>
+                                    <option value="internal">{{ __('project_files.labels.internal_only') }}</option>
+                                    <option value="client">{{ __('project_files.labels.client_visible') }}</option>
                                 </select>
                             </div>
 
                             <div>
-                                <x-input-label for="notes" value="Notes" />
+                                <x-input-label for="notes" :value="__('project_files.fields.notes')" />
                                 <textarea id="notes" name="notes" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
                             </div>
 
-                            <x-primary-button>Upload</x-primary-button>
+                            <x-primary-button>{{ __('project_files.actions.upload') }}</x-primary-button>
                         </form>
                     </section>
 
                     <section class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
-                        <h2 class="text-lg font-bold text-slate-950">Write Detail</h2>
+                        <h2 class="text-lg font-bold text-slate-950">{{ __('project_files.labels.write_detail') }}</h2>
                         <form method="POST" action="{{ route('projects.files.store', $project) }}" class="mt-5 space-y-4">
                             @csrf
                             <input type="hidden" name="entry_type" value="note">
 
                             <div>
-                                <x-input-label for="note_title" value="Title" />
-                                <x-text-input id="note_title" name="title" class="mt-1 block w-full" value="{{ old('entry_type') === 'note' ? old('title') : '' }}" placeholder="Hosting note, client instruction..." />
+                                <x-input-label for="note_title" :value="__('project_files.fields.title')" />
+                                <x-text-input id="note_title" name="title" class="mt-1 block w-full" value="{{ old('entry_type') === 'note' ? old('title') : '' }}" :placeholder="__('project_files.placeholders.note_title')" />
                                 <x-input-error :messages="$errors->get('title')" class="mt-2" />
                             </div>
 
                             <div>
-                                <x-input-label for="note_category" value="Category" />
+                                <x-input-label for="note_category" :value="__('project_files.fields.category')" />
                                 <select id="note_category" name="category" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
                                     @foreach ($categoryLabels as $value => $label)
                                         <option value="{{ $value }}" @selected(old('entry_type') === 'note' && old('category') === $value)>{{ $label }}</option>
@@ -195,25 +197,25 @@
                             </div>
 
                             <div>
-                                <x-input-label for="note_visibility" value="Visibility" />
+                                <x-input-label for="note_visibility" :value="__('project_files.fields.visibility')" />
                                 <select id="note_visibility" name="visibility" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                                    <option value="internal" @selected(old('entry_type') === 'note' && old('visibility') === 'internal')>Internal only</option>
-                                    <option value="client" @selected(old('entry_type') === 'note' && old('visibility') === 'client')>Client visible</option>
+                                    <option value="internal" @selected(old('entry_type') === 'note' && old('visibility') === 'internal')>{{ __('project_files.labels.internal_only') }}</option>
+                                    <option value="client" @selected(old('entry_type') === 'note' && old('visibility') === 'client')>{{ __('project_files.labels.client_visible') }}</option>
                                 </select>
                             </div>
 
                             <div>
-                                <x-input-label for="note_content" value="Details" />
-                                <textarea id="note_content" name="content" rows="5" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" placeholder="Write details here...">{{ old('entry_type') === 'note' ? old('content') : '' }}</textarea>
+                                <x-input-label for="note_content" :value="__('project_files.fields.details')" />
+                                <textarea id="note_content" name="content" rows="5" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" placeholder="{{ __('project_files.placeholders.note_content') }}">{{ old('entry_type') === 'note' ? old('content') : '' }}</textarea>
                                 <x-input-error :messages="$errors->get('content')" class="mt-2" />
                             </div>
 
-                            <x-primary-button>Save Detail</x-primary-button>
+                            <x-primary-button>{{ __('project_files.actions.save_detail') }}</x-primary-button>
                         </form>
                     </section>
 
                     <section class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
-                        <h2 class="text-lg font-bold text-slate-950">Setup</h2>
+                        <h2 class="text-lg font-bold text-slate-950">{{ __('project_files.labels.setup') }}</h2>
                         <dl class="mt-5 space-y-4 text-sm">
                             <div><dt class="text-slate-500">CMS / System</dt><dd class="font-semibold text-slate-900">{{ $project->cms ?: '-' }}</dd></div>
                             <div><dt class="text-slate-500">Theme / Builder</dt><dd class="font-semibold text-slate-900">{{ $project->theme_builder ?: '-' }}</dd></div>
@@ -223,8 +225,8 @@
                     </section>
 
                     <section class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
-                        <h2 class="text-lg font-bold text-slate-950">Requirements</h2>
-                        <p class="mt-4 whitespace-pre-line text-sm leading-6 text-slate-600">{{ $project->requirements ?: 'No project requirements saved yet.' }}</p>
+                        <h2 class="text-lg font-bold text-slate-950">{{ __('project_files.labels.requirements') }}</h2>
+                        <p class="mt-4 whitespace-pre-line text-sm leading-6 text-slate-600">{{ $project->requirements ?: __('project_files.labels.no_requirements') }}</p>
                     </section>
                 </aside>
             </div>
@@ -232,10 +234,10 @@
             <section class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
                 <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <h2 class="text-xl font-bold text-slate-950">Project Files</h2>
-                        <p class="mt-1 text-sm text-slate-500">Files are stored privately and can only be downloaded through the portal.</p>
+                        <h2 class="text-xl font-bold text-slate-950">{{ __('project_files.labels.project_files') }}</h2>
+                        <p class="mt-1 text-sm text-slate-500">{{ __('project_files.labels.files_stored_private') }}</p>
                     </div>
-                    <span class="w-fit rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">{{ $project->files->count() }} total</span>
+                    <span class="w-fit rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">{{ trans_choice('project_files.total_count', $project->files->count()) }}</span>
                 </div>
 
                 <div class="mt-6 space-y-8">
@@ -245,9 +247,9 @@
                             <div class="flex flex-col gap-2 border-b border-slate-100 bg-slate-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
                                 <div>
                                     <h3 class="font-bold text-slate-950">{{ $label }}</h3>
-                                    <p class="text-sm text-slate-500">{{ $categoryFiles->count() }} saved item{{ $categoryFiles->count() === 1 ? '' : 's' }}</p>
+                                    <p class="text-sm text-slate-500">{{ trans_choice('project_files.items_count', $categoryFiles->count()) }}</p>
                                 </div>
-                                <a href="#file-upload-panel" class="text-sm font-bold text-neutral-700">Add item</a>
+                                <a href="#file-upload-panel" class="text-sm font-bold text-neutral-700">{{ __('project_files.actions.add_item') }}</a>
                             </div>
 
                             <div class="divide-y divide-slate-100 px-4">
@@ -260,18 +262,18 @@
                                                     'rounded-md px-2 py-1 text-xs font-bold',
                                                     'bg-slate-100 text-slate-600' => $file->entry_type === 'file',
                                                     'bg-sky-50 text-sky-700' => $file->entry_type === 'note',
-                                                ])>{{ $file->entry_type === 'note' ? 'Written detail' : 'File' }}</span>
+                                                ])>{{ $file->entry_type === 'note' ? __('project_files.labels.written_detail') : __('project_files.labels.file') }}</span>
                                                 <span @class([
                                                     'rounded-md px-2 py-1 text-xs font-bold',
                                                     'bg-emerald-50 text-emerald-700' => $file->visibility === 'client',
                                                     'bg-rose-50 text-rose-700' => $file->visibility !== 'client',
-                                                ])>{{ $file->visibility === 'client' ? 'Client visible' : 'Internal only' }}</span>
+                                                ])>{{ $file->visibility === 'client' ? __('project_files.labels.client_visible') : __('project_files.labels.internal_only') }}</span>
                                             </div>
                                             <p class="mt-1 text-sm text-slate-500">
                                                 @if ($file->entry_type === 'file')
                                                     {{ $fileSize((int) $file->size) }} ·
                                                 @endif
-                                                Saved by {{ $file->uploader?->name ?: 'Unknown' }} · {{ $file->created_at->format('d.m.Y H:i') }}
+                                                {{ __('project_files.labels.saved_by') }} {{ $file->uploader?->name ?: '-' }} · {{ $file->created_at->format('d.m.Y H:i') }}
                                             </p>
                                             @if ($file->content)
                                                 <p class="mt-2 whitespace-pre-line rounded-md bg-slate-50 p-3 text-sm leading-6 text-slate-700">{{ $file->content }}</p>
@@ -282,19 +284,19 @@
                                         </div>
 
                                         <div class="flex flex-wrap gap-2">
-                                            <a href="{{ route('project-files.edit', $file) }}" wire:navigate class="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50">Edit</a>
+                                            <a href="{{ route('project-files.edit', $file) }}" wire:navigate class="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50">{{ __('project_files.actions.edit') }}</a>
                                             @if ($file->entry_type === 'file')
-                                                <a href="{{ route('project-files.download', $file) }}" class="rounded-md bg-neutral-800 px-3 py-2 text-sm font-bold text-white hover:bg-neutral-700">Download</a>
+                                                <a href="{{ route('project-files.download', $file) }}" class="rounded-md bg-neutral-800 px-3 py-2 text-sm font-bold text-white hover:bg-neutral-700">{{ __('project_files.actions.download') }}</a>
                                             @endif
                                             <form method="POST" action="{{ route('project-files.destroy', $file) }}">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="rounded-md border border-rose-200 bg-white px-3 py-2 text-sm font-bold text-rose-700 hover:bg-rose-50">Delete</button>
+                                                <button type="submit" class="rounded-md border border-rose-200 bg-white px-3 py-2 text-sm font-bold text-rose-700 hover:bg-rose-50">{{ __('project_files.actions.delete') }}</button>
                                             </form>
                                         </div>
                                     </div>
                                 @empty
-                                    <p class="py-5 text-sm text-slate-500">No items saved in this section yet.</p>
+                                    <p class="py-5 text-sm text-slate-500">{{ __('project_files.labels.no_items') }}</p>
                                 @endforelse
                             </div>
                         </div>
@@ -304,8 +306,8 @@
 
             <section class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
                 <div class="flex items-center justify-between">
-                    <h2 class="text-xl font-bold text-slate-950">Individual Maintenance Reports</h2>
-                    <a href="{{ route('reports.create', ['project' => $project->id]) }}" wire:navigate class="text-sm font-bold text-neutral-700">Create Report</a>
+                    <h2 class="text-xl font-bold text-slate-950">{{ __('project_files.labels.individual_reports') }}</h2>
+                    <a href="{{ route('reports.create', ['project' => $project->id]) }}" wire:navigate class="text-sm font-bold text-neutral-700">{{ __('project_files.actions.create_report') }}</a>
                 </div>
 
                 <div class="mt-5 divide-y divide-slate-100">
@@ -315,7 +317,7 @@
                             <p class="mt-1 text-sm text-slate-500">{{ ucfirst($report->status) }} · {{ $report->total_hours }} Std.</p>
                         </a>
                     @empty
-                        <p class="py-8 text-sm text-slate-500">No reports yet. Create the first monthly report for this project.</p>
+                        <p class="py-8 text-sm text-slate-500">{{ __('project_files.labels.no_reports') }}</p>
                     @endforelse
                 </div>
             </section>

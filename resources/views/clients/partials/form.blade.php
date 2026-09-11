@@ -95,7 +95,7 @@
     </section>
 
     <div class="flex justify-end gap-3">
-        <a href="{{ route('clients.index') }}" wire:navigate class="rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700">Cancel</a>
-        <x-primary-button>Save Client</x-primary-button>
+        <a href="{{ route('clients.index') }}" wire:navigate class="rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700">{{ __('app.cancel') }}</a>
+        <x-primary-button>{{ __('app.clients.save') }}</x-primary-button>
     </div>
 </form>

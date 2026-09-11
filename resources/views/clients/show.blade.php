@@ -11,8 +11,8 @@
                 <h1 class="mt-2 text-3xl font-bold text-slate-950">{{ $client->company_name }}</h1>
             </div>
             <div class="flex flex-wrap gap-3">
-                <a href="{{ route('projects.create', ['client' => $client->id]) }}" wire:navigate class="rounded-md bg-neutral-800 px-4 py-2 text-sm font-bold text-white hover:bg-neutral-700">Add Project</a>
-                <a href="{{ route('clients.edit', $client) }}" wire:navigate class="rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50">Edit Client</a>
+                <a href="{{ route('projects.create', ['client' => $client->id]) }}" wire:navigate class="rounded-md bg-neutral-800 px-4 py-2 text-sm font-bold text-white hover:bg-neutral-700">{{ __('app.clients.add_project') }}</a>
+                <a href="{{ route('clients.edit', $client) }}" wire:navigate class="rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50">{{ __('app.clients.edit_client') }}</a>
             </div>
         </div>
     </x-slot>
@@ -26,7 +26,7 @@
                         <div><dt class="text-slate-500">Branche</dt><dd class="font-semibold text-slate-900">{{ $profile?->industry ?: '-' }}</dd></div>
                         <div><dt class="text-slate-500">Rechtsform</dt><dd class="font-semibold text-slate-900">{{ $profile?->legal_form ?: '-' }}</dd></div>
                         <div><dt class="text-slate-500">Kunde seit</dt><dd class="font-semibold text-slate-900">{{ $profile?->customer_since ?: '-' }}</dd></div>
-                        <div><dt class="text-slate-500">Status</dt><dd class="font-semibold text-slate-900">{{ ucfirst($client->status) }}</dd></div>
+                        <div><dt class="text-slate-500">Status</dt><dd class="font-semibold text-slate-900">{{ __('app.status.'.$client->status) }}</dd></div>
                     </dl>
                 </section>
 
@@ -71,10 +71,10 @@
                 <section class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
                     <div class="flex items-center justify-between">
                         <div>
-                            <h2 class="text-xl font-bold text-slate-950">Projects</h2>
-                            <p class="mt-1 text-sm text-slate-500">All project-level work, reports, documents and tickets live inside these projects.</p>
+                            <h2 class="text-xl font-bold text-slate-950">{{ __('app.clients.projects_title') }}</h2>
+                            <p class="mt-1 text-sm text-slate-500">{{ __('app.clients.projects_description') }}</p>
                         </div>
-                        <a href="{{ route('projects.create', ['client' => $client->id]) }}" wire:navigate class="text-sm font-bold text-neutral-700">Add Project</a>
+                        <a href="{{ route('projects.create', ['client' => $client->id]) }}" wire:navigate class="text-sm font-bold text-neutral-700">{{ __('app.clients.add_project') }}</a>
                     </div>
 
                     <div class="mt-5 divide-y divide-slate-100">
@@ -83,13 +83,13 @@
                                 <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                                     <div>
                                         <p class="font-bold text-slate-950">{{ $project->name }}</p>
-                                        <p class="mt-1 text-sm text-slate-500">{{ $project->website_url ?: 'No website URL' }}</p>
+                                        <p class="mt-1 text-sm text-slate-500">{{ $project->website_url ?: __('app.no_website_url') }}</p>
                                     </div>
-                                    <span class="w-fit rounded-md bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-600">{{ ucfirst($project->status) }}</span>
+                                    <span class="w-fit rounded-md bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-600">{{ __('app.status.'.$project->status) }}</span>
                                 </div>
                             </a>
                         @empty
-                            <p class="py-8 text-sm text-slate-500">No projects yet. Add the first project for this client.</p>
+                            <p class="py-8 text-sm text-slate-500">{{ __('app.clients.no_projects') }}</p>
                         @endforelse
                     </div>
                 </section>
@@ -102,7 +102,7 @@
 
                     <section class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
                         <h2 class="text-lg font-bold text-slate-950">Interne Notizen</h2>
-                        <p class="mt-4 whitespace-pre-line text-sm leading-6 text-slate-600">{{ $profile?->personal_notes ?: 'No internal notes saved yet.' }}</p>
+                        <p class="mt-4 whitespace-pre-line text-sm leading-6 text-slate-600">{{ $profile?->personal_notes ?: __('app.clients.no_internal_notes') }}</p>
                     </section>
                 </aside>
             </div>

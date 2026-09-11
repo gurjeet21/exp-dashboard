@@ -4,9 +4,18 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\MaintenanceReportController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectFileController;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/login');
+
+Route::get('locale/{locale}', function (string $locale): RedirectResponse {
+    abort_unless(in_array($locale, ['de', 'en'], true), 404);
+
+    session(['locale' => $locale]);
+
+    return back();
+})->middleware('auth')->name('locale.switch');
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])

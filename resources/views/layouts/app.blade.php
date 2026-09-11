@@ -21,13 +21,21 @@
             <div class="min-w-0">
                 <div class="hidden h-20 items-center justify-between border-b border-slate-200 bg-white px-6 lg:flex">
                     <div class="w-full max-w-xl rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-500">
-                        Search clients, projects, tasks...
+                        {{ __('app.search_placeholder') }}
                     </div>
 
                     <div class="flex items-center gap-4">
                         <div class="inline-flex rounded-full border border-slate-200 bg-white p-1 text-sm">
-                            <span class="rounded-full bg-neutral-800 px-3 py-1 font-semibold text-white">DE</span>
-                            <span class="px-3 py-1 text-slate-500">EN</span>
+                            <a href="{{ route('locale.switch', 'de') }}" @class([
+                                'rounded-full px-3 py-1 font-semibold',
+                                'bg-neutral-800 text-white' => app()->getLocale() === 'de',
+                                'text-slate-500' => app()->getLocale() !== 'de',
+                            ])>DE</a>
+                            <a href="{{ route('locale.switch', 'en') }}" @class([
+                                'rounded-full px-3 py-1 font-semibold',
+                                'bg-neutral-800 text-white' => app()->getLocale() === 'en',
+                                'text-slate-500' => app()->getLocale() !== 'en',
+                            ])>EN</a>
                         </div>
                         <div class="grid h-11 w-11 place-items-center rounded-full bg-neutral-800 text-sm font-bold text-white">
                             {{ collect(explode(' ', auth()->user()->name))->map(fn ($part) => mb_substr($part, 0, 1))->take(2)->implode('') }}

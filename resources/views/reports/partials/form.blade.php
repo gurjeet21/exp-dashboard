@@ -31,8 +31,8 @@
                 <div>
                     <x-input-label for="status" value="Status" />
                     <select id="status" name="status" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                        <option value="draft" @selected(old('status', $defaults['status']) === 'draft')>Draft</option>
-                        <option value="final" @selected(old('status', $defaults['status']) === 'final')>Final</option>
+                        <option value="draft" @selected(old('status', $defaults['status']) === 'draft')>{{ __('app.status.draft') }}</option>
+                        <option value="final" @selected(old('status', $defaults['status']) === 'final')>{{ __('app.status.final') }}</option>
                     </select>
                 </div>
             </div>
@@ -124,8 +124,8 @@
         </section>
 
         <div class="flex justify-end gap-3">
-            <a href="{{ route('reports.index') }}" wire:navigate class="rounded-md border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700">Cancel</a>
-            <x-primary-button>Save Report</x-primary-button>
+            <a href="{{ route('reports.index') }}" wire:navigate class="rounded-md border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700">{{ __('app.cancel') }}</a>
+            <x-primary-button>{{ __('app.reports.save') }}</x-primary-button>
         </div>
     </div>
 </form>

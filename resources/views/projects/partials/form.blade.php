@@ -32,12 +32,12 @@
 
             <div>
                 <x-input-label for="name" value="Projektname" />
-                <x-text-input id="name" name="name" class="mt-1 block w-full" value="{{ old('name', $project->name) }}" required placeholder="Website Wartung, SEO Betreuung..." />
+                <x-text-input id="name" name="name" class="mt-1 block w-full" value="{{ old('name', $project->name) }}" required placeholder="{{ __('project_files.placeholders.project_name') }}" />
                 <x-input-error :messages="$errors->get('name')" class="mt-2" />
             </div>
 
             <div>
-                <x-input-label for="website_url" value="Website URL" />
+                <x-input-label for="website_url" :value="__('project_files.fields.website_url')" />
                 <x-text-input id="website_url" name="website_url" class="mt-1 block w-full" value="{{ old('website_url', $project->website_url) }}" placeholder="https://example.de" />
                 <x-input-error :messages="$errors->get('website_url')" class="mt-2" />
             </div>
@@ -45,8 +45,8 @@
             <div>
                 <x-input-label for="type" value="Projektart" />
                 <select id="type" name="type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                    @foreach (['maintenance' => 'Wartung', 'website' => 'Website / Relaunch', 'shop' => 'Online Shop', 'seo' => 'SEO', 'marketing' => 'Marketing', 'development' => 'Entwicklung'] as $value => $label)
-                        <option value="{{ $value }}" @selected(old('type', $project->type ?: 'maintenance') === $value)>{{ $label }}</option>
+                    @foreach (['maintenance', 'website', 'shop', 'seo', 'marketing', 'development'] as $value)
+                        <option value="{{ $value }}" @selected(old('type', $project->type ?: 'maintenance') === $value)>{{ __('project_files.types.'.$value) }}</option>
                     @endforeach
                 </select>
             </div>
@@ -101,7 +101,7 @@
 
             <div>
                 <x-input-label for="maintenance_package" value="Wartungspaket" />
-                <x-text-input id="maintenance_package" name="maintenance_package" class="mt-1 block w-full" value="{{ old('maintenance_package', $project->maintenance_package) }}" placeholder="Basic, Standard, Premium..." />
+                <x-text-input id="maintenance_package" name="maintenance_package" class="mt-1 block w-full" value="{{ old('maintenance_package', $project->maintenance_package) }}" placeholder="{{ __('project_files.placeholders.maintenance_package') }}" />
             </div>
         </div>
 
@@ -117,7 +117,7 @@
     </section>
 
     <div class="flex justify-end gap-3">
-        <a href="{{ route('projects.index') }}" wire:navigate class="rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700">Cancel</a>
-        <x-primary-button>Save Project</x-primary-button>
+        <a href="{{ route('projects.index') }}" wire:navigate class="rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700">{{ __('app.cancel') }}</a>
+        <x-primary-button>{{ __('app.projects.save') }}</x-primary-button>
     </div>
 </form>
